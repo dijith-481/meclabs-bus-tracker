@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Location Sender</title>
+  </head>
+  <body>
+
+    <h1>Location Sender</h1>
+<input type="text" id="busName" placeholder="Enter Bus Name">
+<button id="setBusName">Set Bus Name</button> <br><br>  </input>
+
+    <p id="status">Getting location...</p>
+    <p id="status2"> </p>
+
+    <button id="randomLocation">Send Random Location</button>
+    <script src="{{ url_for('static', filename='locationsend.js') }}"></script>
+  </body>
+</html>

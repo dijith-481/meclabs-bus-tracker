@@ -1,0 +1,12 @@
+
+.venv
+.idx
+devserver.sh
+__pycache__
+node_modules
+temp
+flask_session
+.vscode
+
+
+.pytest_cache
