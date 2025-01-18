@@ -19,8 +19,6 @@ document.addEventListener("DOMContentLoaded", function () {
             position.coords.longitude + (Math.random() - 0.5) * 0.02;
         },
         () => {
-          console.log("not location");
-
           currentRandomLatitude = currentRandomLatitude =
             37.7749 + (Math.random() - 0.5) * 0.02;
           currentRandomLongitude = -122.4194 + (Math.random() - 0.5) * 0.02;
@@ -32,7 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     if (!randomLocationIntervalId)
       randomLocationIntervalId = setInterval(sendLocation, timeInterval);
-    console.log(navigator.geolocation);
     errorCallback(navigator.geolocation);
   });
 
@@ -123,9 +120,6 @@ function getRandomLocation() {
   currentRandomLatitude += latChange;
   currentRandomLongitude += lonChange;
   const timestamp = Date.now();
-  let dateObj = new Date(timestamp);
-  let utcString = dateObj.toUTCString();
-  document.getElementById("status2").textContent = utcString;
   return {
     sender_id: sender_id,
     latitude: currentRandomLatitude,
