@@ -1,5 +1,6 @@
 import os
 import random
+import shutil
 import time
 import uuid
 
@@ -17,9 +18,6 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 
-scheduler = APScheduler()
-scheduler.init_app(app)
-scheduler.start()
 connection_data = {}
 
 
@@ -46,11 +44,10 @@ def send_location():
 def register_connection():
     data = request.get_json()
     bus_name = data.get("busName")
-    print(bus_name, "busname")
     if not bus_name:
         return jsonify({"error": "busName is required"}), 400
     connection_id = str(uuid.uuid4())
-    connection_data[connection_id] = bus_name
+    connection_data[connection_id] = {"bus_name": bus_name, "time": time.time()}
     return jsonify({"connection_id": connection_id}), 201
 
 
@@ -71,6 +68,7 @@ def update_location():
         with open(filepath, "a") as f:
             log_entry = f"{latitude},{longitude},{timestamp}\n"
             f.write(log_entry)
+        connection_data[sender_id]["time"] = time.time()
 
         return jsonify({"message": "Location updated"}), 200
 
@@ -82,15 +80,6 @@ def update_location():
 def location_sender():
     print("locationsend acessed")
     return render_template("index.html")
-
-
-# Simulate real-time bus location updates
-def bus_location_simulator():
-    while True:
-        lat = 10.8505 + random.uniform(-0.01, 0.01)
-        lng = 76.2711 + random.uniform(-0.01, 0.01)
-        socketio.emit("bus_location", {"lat": lat, "lng": lng})
-        time.sleep(2)  # Simulate data every 2 seconds
 
 
 @socketio.on("connect")
@@ -145,22 +134,37 @@ def get_all_latest_locations():
 
             location = get_latest_location_from_log(sender_id)
 
-            bus_name = connection_data[sender_id]
+            bus_name = connection_data[sender_id]["bus_name"]
             if location and bus_name:
                 all_locations[sender_id] = {"location": location, "bus_name": bus_name}
         except Exception as e:
             print(e)
             pass
-    print(all_locations, "164")
 
     return all_locations
+
+
+def delete_inactive_directories(inactive_threshold=600):
+
+    while True:
+        current_time = time.time()
+        for dir_path, values in connection_data:
+            last_activity = values["time"]
+            if current_time - last_activity > inactive_threshold:
+                try:
+                    shutil.rmtree(dir_path)
+                    del connection_data[dir_path]
+                    print(f"Deleted inactive directory: {dir_path}")
+                except OSError as e:
+                    print(f"Error deleting directory {dir_path}: {e}")
+        time.sleep(600)
 
 
 if __name__ == "__main__":
     import threading
 
-    location_thread = threading.Thread(target=send_location_updates)
-    location_thread.daemon = True
-    location_thread.start()
+    socketio.start_background_task(send_location_updates)
+    cleanup_thread = threading.Thread(target=delete_inactive_directories, daemon=True)
+    cleanup_thread.start()
 
     socketio.run(app, debug=True, ssl_context="adhoc", host="0.0.0.0")
