@@ -14,10 +14,8 @@ document.addEventListener("DOMContentLoaded", function () {
     if (watchId) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          currentRandomLatitude =
-            position.coords.latitude + (Math.random() - 0.5) * 0.02;
-          currentRandomLongitude =
-            position.coords.longitude + (Math.random() - 0.5) * 0.02;
+          currentRandomLatitude = position.coords.latitude;
+          currentRandomLongitude = position.coords.longitude;
         },
         () => {
           currentRandomLatitude = Math.random() * 360 - 180;

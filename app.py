@@ -173,7 +173,9 @@ def get_bus_locations_history(sender_id):
                 lines = f.readlines()
                 data = []
                 if lines:
-                    for line in lines:
+                    for i, line in enumerate(lines):
+                        if i == 0:
+                            continue
                         latitude, longitude, timestamp_str = line.split(",")
                         data.append([float(latitude), float(longitude)])
                     return data
