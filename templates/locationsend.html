@@ -2,6 +2,11 @@
 <html>
   <head>
     <title>Location Sender</title>
+    <style>
+    .hidden {
+      display:none;
+}
+    </style>
   </head>
   <body>
 
@@ -11,7 +16,7 @@
 
     <p id="status">Getting location...</p>
 
-    <button id="randomLocation">Send Random Location</button>
+    <button id="randomLocation" class="hidden" >Send Random Location</button>
     <script src="{{ url_for('static', filename='locationsend.js') }}"></script>
   </body>
 </html>

@@ -1,21 +1,45 @@
 <!doctype html>
 <html>
   <head>
-    <title>Real-Time Bus Tracking</title>
+    <title>MecLabs Bus Tracker</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{{url_for('static',filename='images/bus-tracker.png')}}">
     <link
       rel="stylesheet"
       href="{{url_for('static',filename='leaflet.css')}}"
     />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='bustracking.css')}}"
+    />
     <script src="{{url_for('static', filename='leaflet.js')}}"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <style>
       #map {
-        height: 400px;
+        height: 100vh;
       }
     </style>
   </head>
+
   <body>
-    <h1>Real-Time Bus Tracking</h1>
+<header>
+  <div class="header-left">
+    <img class="logo" src="{{url_for('static',filename='images/bus-tracker.png')}}" alt="Logo"> <span class="title">    <a href="/">MecLabs Bus Tracker</a>
+</span>
+  </div>
+  <div class="header-right">
+    <a href="/send_location">Send Location</a>
+  </div>
+</header>
+ <select id="bus-select">
+        <option value="">Select a bus</option> </select>  </select>
+    </select>
     <div id="map"></div>
+<div id="bus-list"></div>  </div>
 
     <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='index.js') }}"></script>
