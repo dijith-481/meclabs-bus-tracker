@@ -184,7 +184,7 @@ def get_bus_locations_history(sender_id):
     return None
 
 
-def delete_inactive_directories(inactive_threshold=10):
+def clear_temp_folder():
     temp_folder = app.config["TEMP_FOLDER"]
     for filename in os.listdir(temp_folder):
         file_path = os.path.join(temp_folder, filename)
@@ -195,25 +195,35 @@ def delete_inactive_directories(inactive_threshold=10):
                 shutil.rmtree(file_path)
         except Exception as e:
             print(f"Failed to delete {file_path}. Reason: {e}")
+
+
+def delete_inactive_directories(inactive_threshold=600):
     while True:
         print("deleting")
         current_time = time.time()
+        dirs_to_delete = []
+
         for dir_path, values in connection_data.items():
-            dir_path = str(app.config["TEMP_FOLDER"]) + "/" + dir_path
             last_activity = values["time"]
             if current_time - last_activity > inactive_threshold:
-                try:
-                    shutil.rmtree(dir_path)
-                    del connection_data[dir_path]
-                    print(f"Deleted inactive directory: {dir_path}")
-                except OSError as e:
-                    print(f"Error deleting directory {dir_path}: {e}")
-        time.sleep(10)
+                dirs_to_delete.append(dir_path)
+
+        for dir_path in dirs_to_delete:
+            full_path = os.path.join(app.config["TEMP_FOLDER"], dir_path)
+            try:
+                shutil.rmtree(full_path)
+                del connection_data[dir_path]
+                print(f"Deleted inactive directory: {dir_path}")
+            except OSError as e:
+                print(f"Error deleting directory {dir_path}: {e}")
+
+        time.sleep(600)
 
 
 if __name__ == "__main__":
 
     socketio.start_background_task(send_location_updates)
+    clear_temp_folder()
     cleanup_thread = threading.Thread(target=delete_inactive_directories, daemon=True)
     cleanup_thread.start()
 
