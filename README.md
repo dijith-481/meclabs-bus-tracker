@@ -43,7 +43,7 @@ pip install -r requirements.txt
 ```
 
 ```bash
-python3 app.py # using flask run may not work properly
+python3 app.py # using 'flask run' may not work properly
 ```
 
 ## Usage
