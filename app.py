@@ -49,6 +49,7 @@ def register_connection():
         return jsonify({"error": "busName is required"}), 400
     connection_id = str(uuid.uuid4())
     connection_data[connection_id] = {"bus_name": bus_name, "time": time.time()}
+    handle_get_available_buses()
     return jsonify({"connection_id": connection_id}), 201
 
 

@@ -1,12 +1,28 @@
 let busName = null;
-let currentRandomLatitude = null;
-let currentRandomLongitude = null;
+let currentRandomLatitude = createRandomLocation(true);
+let currentRandomLongitude = createRandomLocation(false);
 let watchId = null;
 let randomLocationIntervalId = null;
 let sender_id = null;
 let bearing = Math.random() * 2 * Math.PI;
 let speed = 10;
 timeInterval = 2000;
+function createRandomLocation(isLatitue) {
+  const minLatitude = 9.3;
+  const maxLatitude = 10.6;
+  const minLongitude = 76.2;
+  const maxLongitude = 76.5;
+  let minvalue = 0;
+  let maxvalue = 0;
+  if (isLatitue) {
+    minvalue = minLatitude;
+    maxvalue = maxLatitude;
+  } else {
+    minvalue = minLongitude;
+    maxvalue = maxLongitude;
+  }
+  return minvalue + Math.random() * (maxvalue - minvalue);
+}
 
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("randomLocation").addEventListener("click", () => {
@@ -17,10 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
           currentRandomLatitude = position.coords.latitude;
           currentRandomLongitude = position.coords.longitude;
         },
-        () => {
-          currentRandomLatitude = Math.random() * 360 - 180;
-          currentRandomLongitude = Math.random() * 180 - 90;
-        },
+        () => {},
       );
 
       navigator.geolocation.clearWatch(watchId);
@@ -64,8 +77,8 @@ async function getSenderId(busName) {
   try {
     const registerResponse = await fetch("/register", {
       method: "POST",
-      headers: { "Content-Type": "application/json" }, // Important for sending JSON
-      body: JSON.stringify({ busName: busName }), // Send busName in the request body
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ busName: busName }),
     });
     const { connection_id } = await registerResponse.json();
     sender_id = connection_id;
@@ -79,6 +92,7 @@ async function getSenderId(busName) {
 }
 function sendLocation(position = null) {
   const data = position ? getLocation(position) : getRandomLocation();
+  console.log(data);
 
   fetch("/update_location", {
     method: "POST",
@@ -106,7 +120,10 @@ function errorCallback(error) {
 }
 function getRandomLocation() {
   bearing += (Math.random() - 0.5) * 0.5;
-
+  if (currentRandomLongitude < 9.35) {
+    bearing *= -1;
+  }
+  speed = Math.random() * 20;
   const distance = (speed * timeInterval) / 1000;
   const earthRadius = 6371000;
   const latChange =
@@ -118,6 +135,8 @@ function getRandomLocation() {
   currentRandomLatitude += latChange;
   currentRandomLongitude += lonChange;
   const timestamp = Date.now();
+
+  console.log(currentRandomLongitude);
   return {
     sender_id: sender_id,
     latitude: currentRandomLatitude,

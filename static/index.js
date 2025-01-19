@@ -20,23 +20,24 @@ document.addEventListener("DOMContentLoaded", function () {
   //   socket.emit("");
   // });
   socket.on("available_buses", (buses) => {
+    console.log(buses);
     handleAvailableBuses(buses);
   });
 
   socket.emit("get_available_buses");
 
-  document.getElementById("bus-select").addEventListener("click", (event) => {
-    socket.emit("get_available_buses");
-  });
   document.getElementById("bus-select").addEventListener("change", (event) => {
-    socket.emit("get_available_buses");
-    handleBusSelection(event);
+    console.log(event.target.value);
+    if (event.target.value !== "clear") {
+      busId = event.target.value;
+    }
+    handleBusSelection(event.target.value);
   });
   socket.on("locations_update", (locations) => {
     updateBusLocations(locations);
   });
 });
-function handleSingleBusLocationUpdate(busData, busId, isPolyline = false) {
+function handleSingleBusLocationUpdate(busData, id, isPolyline = false) {
   const { location, bus_name } = busData;
 
   if (!location) {
@@ -46,23 +47,32 @@ function handleSingleBusLocationUpdate(busData, busId, isPolyline = false) {
 
   const latlng = [location.latitude, location.longitude];
 
-  let marker = busMarkers[busId];
+  let marker = busMarkers[id];
 
   if (marker) {
     if (map.hasLayer(marker)) {
       if (isPolyline) {
-        polyLines[busId].addLatLng(latlng);
+        polyLines[id].addLatLng(latlng);
       }
       marker.setLatLng(latlng);
+      marker.addEventListener("click", () => {
+        console.log("bus");
+        const busSelect = document.getElementById("bus-select");
+        console.log(busSelect);
+        busSelect.value = busId;
+        console.log(busSelect.value);
+        busId = id;
+        handleBusSelection(busId);
+      });
       marker
         .getPopup()
         .setContent(
           `Bus ${bus_name}<br>Time: ${new Date(location.timestamp).toLocaleString()}`,
         );
     } else {
-      console.log("Bus", busId, "no longer in service.");
+      console.log("Bus", id, "no longer in service.");
 
-      delete busMarkers[busId];
+      delete busMarkers[id];
     }
   } else {
     marker = L.marker(latlng).addTo(map);
@@ -71,11 +81,15 @@ function handleSingleBusLocationUpdate(busData, busId, isPolyline = false) {
         `Bus ${bus_name}<br>Time: ${new Date(location.timestamp).toLocaleString()}`,
       )
       .openPopup();
-    busMarkers[busId] = marker;
+    busMarkers[id] = marker;
+    console.log(Object.keys(busMarkers).length);
+    // if (Object.keys(busMarkers).length === 1)
+    map.setView(latlng);
   }
 }
 
 function updateBusLocations(locations) {
+  console.log(busId, locations[busId]);
   if (!isAllBusView) {
     handleSingleBusLocationUpdate(locations[busId], busId, true);
   }
@@ -93,43 +107,68 @@ function updateBusLocations(locations) {
 }
 
 function busLocationHistoryUpdate(data) {
-  if (busMarkers[busId]) {
-    busMarkers[busId].remove();
-  }
+  // if (busMarkers[busId]) {
+  //   busMarkers[busId].remove();
+  // }
   if (polyLines[busId]) {
     polyLines[busId].remove();
   }
   const latlngs = data.map((location) => [location[0], location[1]]);
-  const polyline = L.polyline(latlngs, { color: "blue" }).addTo(map);
+  const polyline = L.polyline(latlngs, { color: "blue", weight: 5 }).addTo(map);
   polyLines[busId] = polyline;
 
   const lastLocation = data[data.length - 1];
 
+  busMarkers[busId].setLatLng([lastLocation[0], lastLocation[1]]);
+  busMarkers[busId].openPopup();
+
   // if (lastLocation) {
   //   const marker = L.marker([lastLocation[0], lastLocation[1]]).addTo(map);
-  //   busMarkers[busId] = marker;
+  // busMarkers[busId] = marker;
   //   marker.bindPopup(busId);
   // }
 
   if (data.length > 0) {
-    map.fitBounds(polyline.getBounds());
+    map.fitBounds(polyline.getBounds(), {
+      paddingTopLeft: [100, 200], // Increase top padding
+      paddingBottomRight: [100, 100],
+    });
+    map.setView(busMarkers[busId].getLatLng(), 13);
   }
 }
 
 function fitBoundsToMarkers() {
   if (busMarkers.length === 0) {
     return;
+  } else if (busMarkers.length === 1) {
+    const [singleMarker] = busMarkers;
+    map.setView(singleMarker);
   }
   const group = new L.featureGroup(busMarkers);
-  map.fitBounds(group.getBounds());
+  console.log(group);
+  if (group.getBounds().isValid()) {
+    console.log("group is valid");
+    const zoom = map.zoom;
+    map.fitBounds(group.getBounds(), {
+      paddingTopLeft: [0, 200],
+      paddingBottomRight: [50, 50],
+    });
+    map.setView(map.getLatLng(), zoom);
+  }
 }
 
 function handleAvailableBuses(buses) {
   const busSelect = document.getElementById("bus-select");
+  const noBusDialog = document.getElementById("no-bus-dialog");
   console.log(Object.keys(buses).length === 0);
   if (Object.keys(buses).length === 0) {
-    busSelect.innerHTML = '<option value="all">No buses available</option>';
-  } else busSelect.innerHTML = '<option value="all">all Buses</option>';
+    busSelect.classList.add("hidden");
+    noBusDialog.classList.remove("hidden");
+  } else {
+    noBusDialog.classList.add("hidden");
+    busSelect.classList.remove("hidden");
+    busSelect.innerHTML = "";
+  }
   for (const busId in buses) {
     const bus = buses[busId];
     const option = document.createElement("option");
@@ -138,9 +177,8 @@ function handleAvailableBuses(buses) {
     busSelect.appendChild(option);
   }
 }
-function handleBusSelection(event) {
-  busId = event.target.value;
-  if (busId === "all") {
+function handleBusSelection(busId) {
+  if (busId === "clear") {
     isAllBusView = true;
     for (id in polyLines) {
       const polyLine = polyLines[id];
