@@ -36,6 +36,144 @@ header {
   align-items: center; /* Vertically aligns items */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
+body {
+  background-image: url("images/map.png");
+}
+h1 {
+  font-size: 4rem;
+  font-weight: 700;
+  transition: 1s;
+}
+h1:hover {
+  transform: translateY(10px) scale(1.2); /* Normal size */
+  font-weight: 900;
+}
+main {
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: #122212;
+  backdrop-filter: blur(20px);
+  background-color: #81a1c160;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Vertically center */
+  align-items: center; /* Horizontally center */
+  min-height: 100vh; /* Ensure full viewport height */
+  margin: 0; /* Remove default margins */
+  font-family: roboto;
+  text-align: center; /* Center text within elements */
+  transition: 1s;
+}
+p {
+  transition: 1s;
+}
+p:hover {
+  font-weight: 600;
+
+  transform: translateY(10px) scale(1.2); /* Normal size */
+}
+.container {
+  max-width: 700px;
+  padding: 20px;
+}
+button {
+  backdrop-filter: blur(40px);
+  padding: 20px 60px;
+  margin: 10px;
+  border: none;
+  background-color: #32402763;
+
+  color: white;
+  cursor: pointer;
+  border-radius: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+
+  transition: 1s;
+}
+button:hover {
+  background-color: #122212a0;
+  transform: translateY(10px) scale(1.2); /* Normal size */
+  border-radius: 5px;
+}
+
+.box {
+  top: 50%;
+  left: 50%;
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background-color: #3498db; /* Blue background */
+  margin: 10p3;
+  border-radius: 10px;
+  transition: transform 0.3s ease; /* Smooth transition for transform */
+  box-shadow: 2px 2px 5px rgba; /* Subtle box shadow */
+  align-items: center;
+  color: white;
+  border-radius: 100px;
+  font-size: 20px;
+  animation: pinpoint 20s ease-in-out infinite alternate;
+}
+.mapbutton {
+  font-weight: 700;
+  color: #122212;
+  animation: buttoncolor 5s ease-in-out infinite alternate;
+}
+.box1 {
+  top: 10%;
+  left: 0%;
+}
+.box2 {
+  top: 23%;
+  left: 85%;
+}
+
+@keyframes pinpoint {
+  0% {
+    transform: translateX(-400px) scale(0.5); /* Start smaller */
+    background-color: red;
+  }
+
+  25% {
+    transform: translateX(-100px) scale(1.2); /* Grow larger */
+    background-color: green; /* Green at 25% */
+  }
+
+  50% {
+    transform: translateX(200px) scale(1); /* Normal size */
+    background-color: #81a1c1; /* Blue at 50% */
+  }
+
+  75% {
+    transform: translateX(180px) scale(0.8); /* Shrink a bit */
+    background-color: yellow;
+  }
+
+  100% {
+    transform: translateX(400px) scale(0.5); /* Smaller again */
+    background-color: red;
+  }
+}
+@keyframes buttoncolor {
+  0% {
+    background-color: #81a1c1;
+  }
+
+  25% {
+    background-color: #a3be8c; /* Green at 25% */
+  }
+
+  50% {
+    background-color: #ebcb8b; /* Blue at 50% */
+  }
+
+  75% {
+    background-color: #bf616a;
+  }
+
+  100% {
+    background-color: #81a1c1;
+  }
+}
 
 #no-bus-dialog {
   position: absolute;

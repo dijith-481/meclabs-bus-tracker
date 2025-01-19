@@ -3,8 +3,14 @@ let isAllBusView = true;
 let polyLines = {};
 let busMarkers = {};
 let busId = null;
-locationHistoryInterval = null;
+let locationHistoryInterval = null;
+let busInitialLatLng = null;
+let busFinalLatLng = null;
+let userLatLng = null;
 const socket = io();
+let watchId = null;
+let busMissed = null;
+let busMissCheckId = null;
 let map;
 document.addEventListener("DOMContentLoaded", function () {
   map = L.map("map").setView([10.0284, 76.3285], 13);
@@ -19,18 +25,24 @@ document.addEventListener("DOMContentLoaded", function () {
   //   socket.emit("get_latest_locations");
   //   socket.emit("");
   // });
+  getUserLocation();
   socket.on("available_buses", (buses) => {
-    console.log(buses);
     handleAvailableBuses(buses);
   });
 
   socket.emit("get_available_buses");
 
   document.getElementById("bus-select").addEventListener("change", (event) => {
-    console.log(event.target.value);
+    busMissed = null;
+
     if (event.target.value !== "clear") {
       busId = event.target.value;
     }
+    busMarkers[busId]
+      .getPopup()
+      .setContent(
+        `Time: ${new Date(location.timestamp).toLocaleString()}<br>Checking if bus is missed ....`,
+      );
     handleBusSelection(event.target.value);
   });
   socket.on("locations_update", (locations) => {
@@ -51,30 +63,50 @@ function handleSingleBusLocationUpdate(busData, id, isPolyline = false) {
 
   if (marker) {
     if (map.hasLayer(marker)) {
-      if (isPolyline) {
-        polyLines[id].addLatLng(latlng);
-      }
       marker.setLatLng(latlng);
       marker.addEventListener("click", () => {
-        console.log("bus");
+        busMissed = null;
+        busMarkers[id]
+          .getPopup()
+          .setContent(
+            `Bus ${bus_name}<br>Time: ${new Date(location.timestamp).toLocaleString()}<br>Checking if bus is missed ....`,
+          );
         const busSelect = document.getElementById("bus-select");
-        console.log(busSelect);
         busSelect.value = busId;
-        console.log(busSelect.value);
         busId = id;
         handleBusSelection(busId);
       });
-      marker
-        .getPopup()
-        .setContent(
-          `Bus ${bus_name}<br>Time: ${new Date(location.timestamp).toLocaleString()}<br>click to see route`,
-        );
+
+      if (isPolyline) {
+        polyLines[id].addLatLng(latlng);
+      } else {
+        if (busMissed && busMissCheckId == busId) {
+          marker
+            .getPopup()
+            .setContent(
+              `Bus ${bus_name}<br>Time: ${new Date(location.timestamp).toLocaleString()}<br>${busMissed}`,
+            );
+        } else {
+          marker
+            .getPopup()
+            .setContent(
+              `Bus ${bus_name}<br>Time: ${new Date(location.timestamp).toLocaleString()}<br>Checking if bus is missed....`,
+            );
+        }
+
+        // marker
+        //   .getPopup()
+        //   .setContent(
+        //     `Bus ${bus_name}<br>Time: ${new Date(location.timestamp).toLocaleString()}<br>click to see route`,
+        //   );
+      }
     } else {
       console.log("Bus", id, "no longer in service.");
 
       delete busMarkers[id];
     }
   } else {
+    if (!isAllBusView) return;
     marker = L.marker(latlng).addTo(map);
     marker
       .bindPopup(
@@ -82,15 +114,17 @@ function handleSingleBusLocationUpdate(busData, id, isPolyline = false) {
       )
       .openPopup();
     busMarkers[id] = marker;
-    console.log(Object.keys(busMarkers).length);
     // if (Object.keys(busMarkers).length === 1)
     map.setView(latlng);
   }
 }
 
 function updateBusLocations(locations) {
-  console.log(busId, locations[busId]);
   if (!isAllBusView) {
+    const { location, bus_name } = locations[busId];
+    const latlng = [location.latitude, location.longitude];
+    busFinalLatLng = latlng;
+    busMissed = checkIfMissedBus();
     handleSingleBusLocationUpdate(locations[busId], busId, true);
   }
   if (map) {
@@ -117,6 +151,9 @@ function busLocationHistoryUpdate(data) {
   const polyline = L.polyline(latlngs, { color: "blue", weight: 5 }).addTo(map);
   polyLines[busId] = polyline;
 
+  busInitialLatLng = latlngs[0];
+  busFinalLatLng = latlngs[latlngs.length - 1];
+
   const lastLocation = data[data.length - 1];
 
   busMarkers[busId].setLatLng([lastLocation[0], lastLocation[1]]);
@@ -133,8 +170,9 @@ function busLocationHistoryUpdate(data) {
       paddingTopLeft: [100, 200], // Increase top padding
       paddingBottomRight: [100, 100],
     });
-    map.setView(busMarkers[busId].getLatLng(), 13);
+    // map.setView(busMarkers[busId].getLatLng(), 13);
   }
+  busMissed = checkIfMissedBus();
 }
 
 function fitBoundsToMarkers() {
@@ -145,22 +183,19 @@ function fitBoundsToMarkers() {
     map.setView(singleMarker);
   }
   const group = new L.featureGroup(busMarkers);
-  console.log(group);
   if (group.getBounds().isValid()) {
-    console.log("group is valid");
     const zoom = map.zoom;
     map.fitBounds(group.getBounds(), {
       paddingTopLeft: [0, 200],
       paddingBottomRight: [50, 50],
     });
-    map.setView(map.getLatLng(), zoom);
+    // map.setView(map.getLatLng(), zoom);
   }
 }
 
 function handleAvailableBuses(buses) {
   const busSelect = document.getElementById("bus-select");
   const noBusDialog = document.getElementById("no-bus-dialog");
-  console.log(Object.keys(buses).length === 0);
   if (Object.keys(buses).length === 0) {
     busSelect.classList.add("hidden");
     noBusDialog.classList.remove("hidden");
@@ -190,5 +225,70 @@ function handleBusSelection(busId) {
     isAllBusView = false;
     socket.emit("bus_location_request", { busId: busId });
     socket.on(`location_${busId}`, (data) => busLocationHistoryUpdate(data));
+  }
+}
+
+function checkIfMissedBus() {
+  if (!(userLatLng && busFinalLatLng && busInitialLatLng)) return;
+  const busDirectionX = Number(busFinalLatLng[1]) - Number(busInitialLatLng[1]);
+  const busDirectionY = Number(busFinalLatLng[0]) - Number(busInitialLatLng[0]);
+
+  const userVectorX = Number(userLatLng[1]) - Number(busInitialLatLng[1]);
+  const userVectorY = Number(userLatLng[0]) - Number(busInitialLatLng[0]);
+
+  const dotProduct = busDirectionX * userVectorX + busDirectionY * userVectorY;
+
+  busMissCheckId = busId;
+  if (dotProduct < 0) {
+    return "Wrong Route";
+  } else if (
+    dotProduct >
+    busDirectionX * busDirectionX + busDirectionY * busDirectionY
+  ) {
+    return "Awaiting Arrival";
+  } else {
+    return "Missed Bus";
+  }
+}
+function getUserLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(saveUserLocation, askForLocation);
+  } else {
+    document.getElementById("status").textContent =
+      "Geolocation is not supported by this browser.";
+  }
+}
+function saveUserLocation(position) {
+  userLatLng = [position.coords.latitude, position.coords.longitude];
+
+  userMarker = L.circleMarker(userLatLng, {
+    radius: 10,
+    color: "blue",
+    fillColor: "blue",
+    fillOpacity: 0.5,
+  }).addTo(map);
+}
+function errorCallback(error) {
+  askForLocation();
+  document.getElementById("status").textContent =
+    `Error getting location: ${error.message} at time ${new Date().toLocaleTimeString()}`;
+  console.error("Geolocation error:", error);
+}
+
+function askForLocation() {
+  const lat = parseFloat(prompt("Enter your latitude:"));
+  const lng = parseFloat(prompt("Enter your longitude:"));
+
+  if (!isNaN(lat) && !isNaN(lng)) {
+    userLatLng = [lat, lng];
+
+    userMarker = L.circleMarker(userLatLng, {
+      radius: 10,
+      color: "blue",
+      fillColor: "blue",
+      fillOpacity: 0.5,
+    }).addTo(map);
+  } else {
+    alert("Invalid coordinates. Please enter numeric values.");
   }
 }

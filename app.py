@@ -27,6 +27,16 @@ connection_data = {}
 
 
 @app.route("/")
+def root():
+    return render_template("landing.html")
+
+
+@app.route("/landing")
+def landing():
+    return render_template("landing.html")
+
+
+@app.route("/map")
 def index():
     return render_template("index.html")
 

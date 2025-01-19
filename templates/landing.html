@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+  <head>
+    <title>MecLabs Bus Tracker</title>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="icon"
+      href="{{url_for('static',filename='images/bus-tracker.png')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='leaflet.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='bustracking.css')}}"
+    />
+    <script src="{{url_for('static', filename='leaflet.js')}}"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+
+  <body>
+<div class="divcontainer">
+  <div class="box">1</div>
+  <div class="box box1">1</div>
+  <div class="box box2">1</div>
+</div>
+    <main>
+      <div class="container">
+        <h1>MecLabs Bus Tracker</h1>
+          <br>
+        <p>Track your bus, not your worries.</p>
+        <p>
+          Tired of unpredictable bus schedules? MecLabs Bus Tracker provides
+          real-time bus locations and estimated arrival times, empowering
+          commuters with accurate information. Say goodbye to stressful waits
+          and missed connections. 
+        </p>
+
+        <button class="mapbutton" onclick="window.location.href='map'">Go to App</button>
+        <button onclick="window.location.href='about'">Learn More</button>
+      </div>
+    </main>
+  </body>
+</html>
