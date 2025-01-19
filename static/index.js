@@ -67,7 +67,7 @@ function handleSingleBusLocationUpdate(busData, id, isPolyline = false) {
       marker
         .getPopup()
         .setContent(
-          `Bus ${bus_name}<br>Time: ${new Date(location.timestamp).toLocaleString()}`,
+          `Bus ${bus_name}<br>Time: ${new Date(location.timestamp).toLocaleString()}<br>click to see route`,
         );
     } else {
       console.log("Bus", id, "no longer in service.");
@@ -78,7 +78,7 @@ function handleSingleBusLocationUpdate(busData, id, isPolyline = false) {
     marker = L.marker(latlng).addTo(map);
     marker
       .bindPopup(
-        `Bus ${bus_name}<br>Time: ${new Date(location.timestamp).toLocaleString()}`,
+        `Bus ${bus_name}<br>Time: ${new Date(location.timestamp).toLocaleString()}<br>click to see route`,
       )
       .openPopup();
     busMarkers[id] = marker;
