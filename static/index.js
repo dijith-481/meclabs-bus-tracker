@@ -13,6 +13,9 @@ let busMissed = null;
 let busMissCheckId = null;
 let map;
 document.addEventListener("DOMContentLoaded", function () {
+  socket.on("connect", function () {
+    console.log("Connected to server");
+  });
   map = L.map("map").setView([10.0284, 76.3285], 13);
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,

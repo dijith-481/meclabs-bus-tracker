@@ -108,8 +108,14 @@ def location_sender():
 #     socketio.emit("locations_update", locations)
 
 
+@socketio.on("connect")
+def handle_connect():
+    print("Client connected")
+
+
 @socketio.on("get_latest_locations")
 def handle_get_latest_locations():
+    print("get_latest_location")
     locations = get_all_latest_locations()
     socketio.emit("locations_update", locations)
 
@@ -219,8 +225,8 @@ def clear_temp_folder():
 
 
 def delete_inactive_directories(inactive_threshold=600):
+    print("deleting")
     while True:
-        print("deleting")
         current_time = time.time()
         dirs_to_delete = []
 

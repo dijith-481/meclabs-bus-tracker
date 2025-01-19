@@ -7,6 +7,8 @@ node_modules
 temp
 flask_session
 .vscode
+cert.pem
+key.pem
 
 
 .pytest_cache
