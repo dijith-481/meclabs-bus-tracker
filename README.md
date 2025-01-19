@@ -4,6 +4,8 @@ This project aims to provide real-time bus tracking information to help users de
 
 **This project is currently in its early stages of development.**
 
+<https://meclabs-bus-tracker.onrender.com/>
+
 ## Features
 
 - **Real-time bus tracking:** See the current location of the bus on a map.
@@ -15,22 +17,19 @@ This project aims to provide real-time bus tracking information to help users de
 - **Flask (Python):** Backend framework for both the sender and main websites.
 - **OpenStreetMap:** Map rendering.
 
-## Installation
-
 ## Requirements
 
 ```bash
-python
-Flask
-FlaskSocketIO
-
+python3
 ```
+
+## Installation
 
 clone this repository
 and open it
 
 ```bash
-cd meclabs-bus-tracker
+ git clone https://github.com/dijith-481/meclabs-bus-tracker.git  && cd meclabs-bus-tracker
 ```
 
 install necessary packages
@@ -43,7 +42,12 @@ pip install -r requirements.txt
 ```
 
 ```bash
-python3 app.py # using 'flask run' may not work properly
+# to setup secure connection
+#only for testing
+ openssl req -x509 -newkey rsa:4096 -nodes -keyout key.pem -out cert.pem -days 365
+# use gunicorn and eventlet
+ gunicorn   --certfile=cert.pem --keyfile=key.pem  --worker-class eventlet -w 1 app:app
+
 ```
 
 ## Usage
@@ -57,7 +61,11 @@ python3 app.py # using 'flask run' may not work properly
 - Add estimated time of arrival (ETA) calculations.
 - Improve UI/UX.
 - Implement database storage
-- Use other data to improve relaiability
+- Use other data to improve reliability
+- Optimization
+- Migration to TypeScript for better error handling
+
+[Learn More](https://meclabs-bus-tracker.onrender.com)
 
 ## Disclaimer
 
