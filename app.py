@@ -245,4 +245,4 @@ if __name__ == "__main__":
     cleanup_thread = threading.Thread(target=delete_inactive_directories, daemon=True)
     cleanup_thread.start()
 
-    socketio.run(app, debug=True, ssl_context="adhoc", host="0.0.0.0")
+    socketio.run(app)
