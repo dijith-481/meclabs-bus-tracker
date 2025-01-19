@@ -50,8 +50,10 @@ header {
   backdrop-filter: blur(40px);
   background-color: #ebcb8b61;
   padding: 10px 20px;
+  display: flex;
+  justify-content: flex-start;
   align-items: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 .header-left {
   display: flex;
@@ -99,13 +101,16 @@ header {
   right: 0px;
   margin: 30px;
   padding: 30px;
-  z-index: 999;
+  z-index: 997;
 }
 
 @media (max-width: 600px) {
   .title {
     display: none;
   }
+}
+#no-bus-dialog.hidden {
+  display: none;
 }
 .hidden {
   display: none;

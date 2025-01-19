@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About MecLabs Bus Tracker</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        line-height: 1.6;
+        margin: 20px;
+      }
+      h1,
+      h2,
+      h3 {
+        font-weight: bold;
+      }
+      h1 {
+        font-size: 2em;
+      }
+      h2 {
+        font-size: 1.5em;
+        margin-top: 1.5em;
+      }
+      h3 {
+        font-size: 1.2em;
+        margin-top: 1em;
+      }
+      ul {
+        list-style-type: disc;
+        padding-left: 20px;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>About MecLabs Bus Tracker</h1>
+
+      <p>
+        MecLabs Bus Tracker is a project dedicated to improving the public
+        transportation experience in Kerala by providing real-time bus
+        information. We aim to empower commuters with accurate and timely data,
+        reducing the stress and uncertainty often associated with bus travel. By
+        leveraging technology and data, we strive to make public transport a
+        more convenient, reliable, and attractive option for everyone.
+      </p>
+
+      <h2>The Problem We're Solving</h2>
+      <p>
+        Public bus travel in Kerala is often hampered by a lack of real-time
+        information, leading to several key issues for passengers:
+      </p>
+      <ul>
+        <li>
+          <strong>Unknown Bus Locations:</strong> Not knowing the current
+          location of a bus.
+        </li>
+        <li>
+          <strong>Unreliable Arrival Times:</strong> Inaccurate schedules making
+          trip planning difficult.
+        </li>
+        <li>
+          <strong>Missed Buses:</strong> Lack of timely information leading to
+          missed connections.
+        </li>
+        <li>
+          <strong>Stressful Waits:</strong> Uncertainty about bus arrival times
+          causing anxiety at bus stops.
+        </li>
+        <li>
+          <strong>Difficult Trip Planning:</strong> Challenges in planning
+          journeys involving multiple buses.
+        </li>
+      </ul>
+
+      <h2>Our Solution: Real-Time Bus Tracking</h2>
+      <p>
+        We're developing a user-friendly website that uses Google Maps APIs to
+        provide real-time bus information. Our platform offers the following key
+        features:
+      </p>
+      <ul>
+        <li>
+          <strong>Real-Time Bus Tracking on a Map:</strong> View the current
+          location of buses on an interactive map.
+        </li>
+        <li>
+          <strong>Accurate Estimated Arrival Times (ETAs):</strong> Dynamically
+          updated ETAs based on real-time data and traffic conditions.
+        </li>
+        <li>
+          <strong>Missed Bus Notifications:</strong> Alerts if you've likely
+          missed your bus.
+        </li>
+        <li>
+          <strong>"Next Bus" Information:</strong> Displaying the ETA of the
+          next bus on your route.
+        </li>
+        <li>
+          <strong>Simplified Route Planning:</strong> Optimized bus route
+          suggestions based on real-time data.
+        </li>
+        <li>
+          <strong>Bus Stop Details:</strong> Information about bus stops,
+          including served routes and schedules.
+        </li>
+      </ul>
+
+      <h2>Data Acquisition and Processing</h2>
+      <p>We use two primary methods to gather real-time bus location data:</p>
+      <ul>
+        <li>
+          <strong>GPS Tracking Devices (High Accuracy):</strong> Dedicated GPS
+          units installed on buses for precise location updates.
+        </li>
+        <li>
+          <strong>Mobile App (Cost-Effective):</strong> A simple app on drivers'
+          or conductors' smartphones to share location data.
+        </li>
+      </ul>
+      <p>
+        Our backend system processes this data to calculate accurate ETAs and
+        provide other real-time information.
+      </p>
+
+      <h2>Benefits for Commuters</h2>
+      <ul>
+        <li>
+          <strong>Empowered Commuters:</strong> Greater control over journeys
+          with accurate information.
+        </li>
+        <li>
+          <strong>Improved Time Management:</strong> Better planning and reduced
+          waiting time.
+        </li>
+        <li>
+          <strong>Increased Public Transport Usage:</strong> Making bus travel
+          more convenient and attractive.
+        </li>
+        <li>
+          <strong>Data-Driven Optimization:</strong> Providing data to improve
+          bus services.
+        </li>
+      </ul>
+
+      <h2>What We're Up To</h2>
+      <div id="what-were-up-to"></div>
+      <p>
+        We are currently in the prototyping phase, building a web-based platform
+        to demonstrate the core functionality of real-time bus tracking. Here's
+        a look at our current progress and the technologies we're using:
+      </p>
+
+      <h3>Technology Stack</h3>
+      <ul>
+        <li>
+          <strong>Backend:</strong> A Flask application with Socket.IO for
+          real-time communication. This handles location data processing and
+          updates.
+        </li>
+        <li>
+          <strong>Frontend (Initial):</strong> Flask's `render_template`
+          function is used to serve the initial website structure and integrate
+          with the backend.
+        </li>
+        <li>
+          <strong>Map Visualization:</strong> OpenStreetMap and Leaflet are used
+          to render the live location of buses on an interactive map.
+        </li>
+        <li>
+          <strong>Location Data Input:</strong> A separate "Send Location"
+          webpage allows for real-time location updates to be sent to the
+          backend. This data is temporarily stored on the server and distributed
+          to the main website via Socket.IO.
+        </li>
+      </ul>
+
+      <h3>Current Functionality</h3>
+      <p>Our current prototype allows users to:</p>
+      <ul>
+        <li>View the live location of all available buses on a map.</li>
+        <li>See the route map of a selected bus.</li>
+        <li>
+          Receive live updates of bus locations and associated timestamps.
+        </li>
+      </ul>
+
+      <h3>Planned Enhancements</h3>
+      <p>
+        We are planning to expand the functionality with the following features:
+      </p>
+      <ul>
+        <li>
+          <strong>Database Integration:</strong> Implementing a database to
+          store bus routes, schedules, and other persistent data.
+        </li>
+        <li>
+          <strong>Predefined Routes:</strong> Defining and storing standard bus
+          routes for improved route planning and display.
+        </li>
+        <li>
+          <strong>User Authentication:</strong> Adding a login page for the
+          "Send Location" section to verify the identity of the location data
+          sender (e.g., drivers).
+        </li>
+        <li>
+          <strong>Estimated Time of Arrival (ETA) Calculation:</strong>
+          Implementing algorithms to estimate bus arrival times at various
+          stops.
+        </li>
+        <li>
+          <strong>Missed Bus Detection:</strong> Developing logic to determine
+          if a user has missed a bus based on real-time data.
+        </li>
+      </ul>
+
+      <h3>Next Steps</h3>
+      <p>Our immediate next steps are focused on:</p>
+      <ul>
+        <li>
+          <strong>Implementing ETA Calculation:</strong> Developing and
+          integrating the algorithms for estimating bus arrival times.
+        </li>
+        <li>
+          <strong>Improving Location Accuracy:</strong> Refining the data
+          acquisition and processing methods to ensure more precise real-time
+          location updates.
+        </li>
+        <li>
+          <strong>Implementing Predetermined Routes:</strong> Defining and
+          storing standard bus routes within the system.
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>
