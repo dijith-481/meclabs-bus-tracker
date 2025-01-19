@@ -15,6 +15,8 @@ let map;
 document.addEventListener("DOMContentLoaded", function () {
   socket.on("connect", function () {
     console.log("Connected to server");
+    socket.emit("get_available_buses");
+    socket.emit("get_latest_locations");
   });
   map = L.map("map").setView([10.0284, 76.3285], 13);
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -32,8 +34,6 @@ document.addEventListener("DOMContentLoaded", function () {
   socket.on("available_buses", (buses) => {
     handleAvailableBuses(buses);
   });
-
-  socket.emit("get_available_buses");
 
   document.getElementById("bus-select").addEventListener("change", (event) => {
     busMissed = null;
@@ -123,6 +123,7 @@ function handleSingleBusLocationUpdate(busData, id, isPolyline = false) {
 }
 
 function updateBusLocations(locations) {
+  console.log("location recieved");
   if (!isAllBusView) {
     const { location, bus_name } = locations[busId];
     const latlng = [location.latitude, location.longitude];

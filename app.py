@@ -102,15 +102,15 @@ def location_sender():
     return render_template("index.html")
 
 
-# @socketio.on("connect")
-# def handle_connect():
-#     locations = get_all_latest_locations()
-#     socketio.emit("locations_update", locations)
-
-
 @socketio.on("connect")
 def handle_connect():
-    print("Client connected")
+    locations = get_all_latest_locations()
+    socketio.emit("locations_update", locations)
+
+
+# @socketio.on("connect")
+# def handle_connect():
+#     print("Client connected")
 
 
 @socketio.on("get_latest_locations")
