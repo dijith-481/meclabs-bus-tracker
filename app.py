@@ -11,7 +11,7 @@ from flask_socketio import SocketIO
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.urandom(24)
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, async_mode="eventlet", cors_allowed_origins="*")
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 # Session(app)
@@ -238,11 +238,12 @@ def delete_inactive_directories(inactive_threshold=600):
         time.sleep(600)
 
 
-if __name__ == "__main__":
+socketio.start_background_task(send_location_updates)
+clear_temp_folder()
+cleanup_thread = threading.Thread(target=delete_inactive_directories, daemon=True)
+cleanup_thread.start()
 
-    socketio.start_background_task(send_location_updates)
-    clear_temp_folder()
-    cleanup_thread = threading.Thread(target=delete_inactive_directories, daemon=True)
-    cleanup_thread.start()
+# if __name__ == "__main__":
 
-    socketio.run(app)
+
+# socketio.run(app, async_mode="eventlet")
