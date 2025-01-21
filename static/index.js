@@ -256,7 +256,7 @@ function checkIfMissedBus() {
 }
 function getUserLocation() {
   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(saveUserLocation, askForLocation);
+    navigator.geolocation.getCurrentPosition(saveUserLocation, errorCallback());
   } else {
     document.getElementById("status").textContent =
       "Geolocation is not supported by this browser.";
@@ -273,9 +273,6 @@ function saveUserLocation(position) {
   }).addTo(map);
 }
 function errorCallback(error) {
-  askForLocation();
-  document.getElementById("status").textContent =
-    `Error getting location: ${error.message} at time ${new Date().toLocaleTimeString()}`;
   console.error("Geolocation error:", error);
 }
 
