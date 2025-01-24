@@ -256,11 +256,20 @@ function checkIfMissedBus() {
 }
 function getUserLocation() {
   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(saveUserLocation, errorCallback());
+    navigator.geolocation.getCurrentPosition(saveUserLocation, setMec());
   } else {
     document.getElementById("status").textContent =
       "Geolocation is not supported by this browser.";
   }
+}
+function setMec() {
+  userLatLng = [10.0287208, 76.3286723];
+  userMarker = L.circleMarker(userLatLng, {
+    radius: 10,
+    color: "blue",
+    fillColor: "blue",
+    fillOpacity: 0.5,
+  }).addTo(map);
 }
 function saveUserLocation(position) {
   userLatLng = [position.coords.latitude, position.coords.longitude];
